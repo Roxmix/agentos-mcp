@@ -51,9 +51,25 @@ With AgentOS:      Agent ←→ AgentOS (Memory · Goals · Reflection · Insigh
 
 ---
 
-## Installation
+## Quick Setup
 
 **Requirements:** Python 3.11+
+
+### Option 1: Install from PyPI (recommended)
+
+```bash
+pip install agentos-mcp
+```
+
+That's it. Then create your `.env` and start both processes:
+
+```bash
+cp .env.example .env   # if running from source
+agentos-server         # Terminal 1 — MCP server
+agentos-daemon         # Terminal 2 — background daemon (optional)
+```
+
+### Option 2: Install from source
 
 ```bash
 git clone https://github.com/Roxmix/agentos-mcp.git
@@ -62,7 +78,7 @@ cd agentos-mcp
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
 
-pip install -r requirements.txt
+pip install -e .
 
 cp .env.example .env
 ```
@@ -77,10 +93,12 @@ Start both processes — each in its own terminal:
 
 ```bash
 # Terminal 1 — MCP Server (talks to the agent)
-python server.py
+agentos-server
+# or: python server.py
 
 # Terminal 2 — Background Daemon (runs continuously)
-python daemon.py
+agentos-daemon
+# or: python daemon.py
 ```
 
 The daemon is optional but required for the "semi-alive" behavior (proactive insights, memory decay, goal alerts).
@@ -97,8 +115,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 {
   "mcpServers": {
     "agentos": {
-      "command": "python",
-      "args": ["/absolute/path/to/agentos/server.py"]
+      "command": "agentos-server"
     }
   }
 }
@@ -110,28 +127,11 @@ Restart Claude Desktop. A 🔨 icon will appear confirming the connection.
 
 ```bash
 claude mcp add-json agentos '{
-  "command": "python",
-  "args": ["/absolute/path/to/agentos/server.py"]
+  "command": "agentos-server"
 }'
 ```
 
 Verify with `/mcp` inside Claude Code.
-
-### Hermes Agent
-
-Add to `~/.hermes/config.yaml`:
-
-```yaml
-mcp_servers:
-  agentos:
-    command: /path/to/agentos/.venv/bin/python3
-    args:
-    - /path/to/agentos/server.py
-    cwd: /path/to/agentos
-    env:
-      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
-    enabled: true
-```
 
 ---
 
@@ -167,30 +167,6 @@ mcp_servers:
 | Tool | Description |
 |------|-------------|
 | `context_get_snapshot` | Unified cognitive state (memories + goals + insights + daemon status) |
-
-### Approval
-| Tool | Description |
-|------|-------------|
-| `approval_list` | List pending approvals |
-| `approval_get_details` | Get full details of an approval item |
-| `approval_decide` | Approve or reject a pending action |
-| `approval_history` | View past decisions |
-
-### Thought Graph
-| Tool | Description |
-|------|-------------|
-| `graph_add_node` | Add a node to the thought graph |
-| `graph_add_edge` | Add a directed edge between two nodes |
-| `graph_find_nodes` | Search for nodes |
-| `graph_delete_node` | Delete a node and all its edges |
-| `graph_stats` | Graph statistics |
-| `graph_find_related_problems` | What blocks/causes problems for a goal? |
-| `graph_impact_analysis` | What will be affected if this node changes? |
-| `graph_find_required_skills` | What skills are needed for a task? |
-| `graph_find_path` | Shortest path between two nodes |
-| `graph_get_neighbors` | Get direct neighbors of a node |
-| `graph_extract_from_text` | Auto-extract nodes/edges from text |
-| `graph_extract_relationship` | Ask LLM about relationship between concepts |
 
 ---
 
@@ -233,9 +209,6 @@ agentos-mcp/
 ├── daemon.py              # Background daemon entry point
 ├── config.py              # Settings via pydantic-settings
 ├── database.py            # SQLite schema and async helpers
-├── gateway.py             # FastAPI HTTP dashboard for approval queue
-├── pyproject.toml         # Project metadata and dependencies
-├── requirements.txt       # Python dependencies
 │
 ├── modules/
 │   ├── memory/            # Store, retrieve, importance scoring
@@ -244,33 +217,19 @@ agentos-mcp/
 │   └── context/           # Unified snapshot builder
 │
 ├── tools/                 # MCP tool definitions (one file per module)
-│   ├── memory_tools.py
-│   ├── goal_tools.py
-│   ├── reflection_tools.py
-│   ├── context_tools.py
-│   ├── approval_tools.py
-│   └── graph_tools.py
 │
-├── events/                # Inter-process event system
-│   ├── bus.py, store.py, dispatcher.py, schema.py
-│   └── handlers/          # memory, goal, reflection handlers
-│
-├── approval/              # Human-in-the-loop system
-│   ├── queue.py, executor.py, webhook.py
-│   └── actions/           # memory, goal, system actions
-│
-├── graph/                 # Thought graph
-│   ├── schema.py, store.py, traversal.py, extractor.py
-│
-├── daemon/
+├── daemon_pkg/            # Background daemon package
 │   ├── writer.py          # Shared DB writer for all jobs
-│   └── jobs/              # 4 scheduled jobs
+│   └── jobs/
+│       ├── memory_decay_job.py
+│       ├── goal_monitor_job.py
+│       ├── reflection_analyzer_job.py
+│       └── self_maintenance_job.py
 │
 ├── tests/                 # Test suite
-│   └── test_agentos.py    # 9 smoke tests
-│
-└── .github/workflows/     # CI/CD
-    └── ci.yml             # GitHub Actions
+├── pyproject.toml         # Package metadata & dependencies
+├── .env.example           # Configuration template
+└── .github/workflows/     # CI/CD (GitHub Actions)
 ```
 
 ---
