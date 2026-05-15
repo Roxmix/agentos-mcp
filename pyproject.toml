@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentos"
+name = "agentos-mcp"
 version = "1.0.0"
 description = "Persistent Cognitive Layer for AI Agents — MCP Server"
 readme = "README.md"
@@ -47,12 +47,18 @@ agentos-server = "server:main"
 agentos-daemon = "daemon:main"
 
 [project.urls]
-Homepage = "https://github.com/your-username/agentos"
-Repository = "https://github.com/your-username/agentos"
-Issues = "https://github.com/your-username/agentos/issues"
+Homepage = "https://github.com/Roxmix/agentos-mcp"
+Repository = "https://github.com/Roxmix/agentos-mcp"
+Issues = "https://github.com/Roxmix/agentos-mcp/issues"
+
+[tool.setuptools]
+py-modules = ["server", "config", "database", "gateway", "daemon"]
 
 [tool.setuptools.packages.find]
-include = ["tools*", "modules*", "events*", "graph*", "approval*", "daemon*"]
+include = ["tools*", "modules*", "events*", "graph*", "approval*", "daemon_pkg*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt", "*.example"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
