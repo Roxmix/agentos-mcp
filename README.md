@@ -56,8 +56,8 @@ With AgentOS:      Agent ←→ AgentOS (Memory · Goals · Reflection · Insigh
 **Requirements:** Python 3.11+
 
 ```bash
-git clone https://github.com/your-username/agentos.git
-cd agentos
+git clone https://github.com/Roxmix/agentos-mcp.git
+cd agentos-mcp
 
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
@@ -117,6 +117,22 @@ claude mcp add-json agentos '{
 
 Verify with `/mcp` inside Claude Code.
 
+### Hermes Agent
+
+Add to `~/.hermes/config.yaml`:
+
+```yaml
+mcp_servers:
+  agentos:
+    command: /path/to/agentos/.venv/bin/python3
+    args:
+    - /path/to/agentos/server.py
+    cwd: /path/to/agentos
+    env:
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+    enabled: true
+```
+
 ---
 
 ## Available MCP Tools
@@ -151,6 +167,30 @@ Verify with `/mcp` inside Claude Code.
 | Tool | Description |
 |------|-------------|
 | `context_get_snapshot` | Unified cognitive state (memories + goals + insights + daemon status) |
+
+### Approval
+| Tool | Description |
+|------|-------------|
+| `approval_list` | List pending approvals |
+| `approval_get_details` | Get full details of an approval item |
+| `approval_decide` | Approve or reject a pending action |
+| `approval_history` | View past decisions |
+
+### Thought Graph
+| Tool | Description |
+|------|-------------|
+| `graph_add_node` | Add a node to the thought graph |
+| `graph_add_edge` | Add a directed edge between two nodes |
+| `graph_find_nodes` | Search for nodes |
+| `graph_delete_node` | Delete a node and all its edges |
+| `graph_stats` | Graph statistics |
+| `graph_find_related_problems` | What blocks/causes problems for a goal? |
+| `graph_impact_analysis` | What will be affected if this node changes? |
+| `graph_find_required_skills` | What skills are needed for a task? |
+| `graph_find_path` | Shortest path between two nodes |
+| `graph_get_neighbors` | Get direct neighbors of a node |
+| `graph_extract_from_text` | Auto-extract nodes/edges from text |
+| `graph_extract_relationship` | Ask LLM about relationship between concepts |
 
 ---
 
@@ -188,11 +228,14 @@ All settings are in `.env` (copy from `.env.example`):
 ## Project Structure
 
 ```
-agentos/
+agentos-mcp/
 ├── server.py              # MCP server entry point
 ├── daemon.py              # Background daemon entry point
 ├── config.py              # Settings via pydantic-settings
 ├── database.py            # SQLite schema and async helpers
+├── gateway.py             # FastAPI HTTP dashboard for approval queue
+├── pyproject.toml         # Project metadata and dependencies
+├── requirements.txt       # Python dependencies
 │
 ├── modules/
 │   ├── memory/            # Store, retrieve, importance scoring
@@ -201,14 +244,33 @@ agentos/
 │   └── context/           # Unified snapshot builder
 │
 ├── tools/                 # MCP tool definitions (one file per module)
+│   ├── memory_tools.py
+│   ├── goal_tools.py
+│   ├── reflection_tools.py
+│   ├── context_tools.py
+│   ├── approval_tools.py
+│   └── graph_tools.py
 │
-└── daemon/
-    ├── writer.py          # Shared DB writer for all jobs
-    └── jobs/
-        ├── memory_decay_job.py
-        ├── goal_monitor_job.py
-        ├── reflection_analyzer_job.py
-        └── self_maintenance_job.py
+├── events/                # Inter-process event system
+│   ├── bus.py, store.py, dispatcher.py, schema.py
+│   └── handlers/          # memory, goal, reflection handlers
+│
+├── approval/              # Human-in-the-loop system
+│   ├── queue.py, executor.py, webhook.py
+│   └── actions/           # memory, goal, system actions
+│
+├── graph/                 # Thought graph
+│   ├── schema.py, store.py, traversal.py, extractor.py
+│
+├── daemon/
+│   ├── writer.py          # Shared DB writer for all jobs
+│   └── jobs/              # 4 scheduled jobs
+│
+├── tests/                 # Test suite
+│   └── test_agentos.py    # 9 smoke tests
+│
+└── .github/workflows/     # CI/CD
+    └── ci.yml             # GitHub Actions
 ```
 
 ---
