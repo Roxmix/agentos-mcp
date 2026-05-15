@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio
+
+      - name: Run tests
+        env:
+          DATABASE_URL: "sqlite:///./test.db"
+        run: |
+          python -m pytest tests/ -v --tb=short
+
+      - name: Compile check
+        run: |
+          python -c "
+          import py_compile, os
+          errors = []
+          for root, dirs, files in os.walk('.'):
+              dirs[:] = [d for d in dirs if d not in ('.venv', '__pycache__', 'chroma_store', '.git')]
+              for f in files:
+                  if f.endswith('.py'):
+                      try:
+                          py_compile.compile(os.path.join(root, f), doraise=True)
+                      except py_compile.PyCompileError as e:
+                          errors.append((os.path.join(root, f), str(e)))
+          if errors:
+              for p, e in errors: print(f'FAIL: {p}: {e}')
+              exit(1)
+          else:
+              print(f'All {sum(1 for _ in (f for r,d,fs in os.walk(\".\") for f in fs if f.endswith(\".py\") and \".venv\" not in r and \"__pycache__\" not in r))} files compile')
+          "

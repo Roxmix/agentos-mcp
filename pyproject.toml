@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentos"
+version = "1.0.0"
+description = "Persistent Cognitive Layer for AI Agents — MCP Server"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [{name = "AgentOS Contributors"}]
+keywords = ["mcp", "ai-agents", "cognitive-layer", "agent-memory", "python"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "sentence-transformers>=2.7.0",
+    "chromadb>=0.5.0",
+    "aiosqlite>=0.20.0",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.0",
+    "apscheduler>=3.10.0",
+    "fastapi>=0.111.0",
+    "uvicorn>=0.29.0",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+agentos-server = "server:main"
+agentos-daemon = "daemon:main"
+
+[project.urls]
+Homepage = "https://github.com/your-username/agentos"
+Repository = "https://github.com/your-username/agentos"
+Issues = "https://github.com/your-username/agentos/issues"
+
+[tool.setuptools.packages.find]
+include = ["tools*", "modules*", "events*", "graph*", "approval*", "daemon*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

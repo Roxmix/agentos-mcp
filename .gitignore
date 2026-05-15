@@ -1,0 +1,37 @@
+# Environment
+.env
+
+# Database & Vector Store (runtime data — not committed)
+*.db
+*.sqlite
+*.sqlite3
+chroma_store/
+
+# Logs
+*.log
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Sentence Transformers cache (downloaded models — large)
+.cache/
