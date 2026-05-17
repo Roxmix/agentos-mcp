@@ -130,7 +130,7 @@ async def _keyword_search(
 
         for word in words:
             conditions.append("(content LIKE ? OR summary LIKE ?)")
-        params.extend([f"%{word}%", f"%{word}%"] for word in words)
+            params.extend([f"%{word}%", f"%{word}%"])
 
         if memory_type:
             params.append(memory_type)
