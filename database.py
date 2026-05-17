@@ -7,12 +7,20 @@ All operations are async using aiosqlite.
 
 import aiosqlite
 import json
+import os
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
-from config import settings
 
-
-DB_PATH = settings.database_url.replace("sqlite:///", "")
+# Store DB in a consistent location.
+# Priority: AGENTOS_DB_PATH env var > ~/.agentos/agentos.db
+# Note: When installed via pip, the DB persists in the user's home directory.
+# When running from source, set AGENTOS_DB_PATH to use a project-local DB.
+if os.environ.get("AGENTOS_DB_PATH"):
+    DB_PATH = os.environ["AGENTOS_DB_PATH"]
+else:
+    _default_db_dir = os.path.join(os.path.expanduser("~"), ".agentos")
+    os.makedirs(_default_db_dir, exist_ok=True)
+    DB_PATH = os.path.join(_default_db_dir, "agentos.db")
 
 # SQL Schema
 SCHEMA_SQL = """

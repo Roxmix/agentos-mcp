@@ -1,37 +1,27 @@
-# Environment
-.env
-
-# Database & Vector Store (runtime data — not committed)
+# Database files
+agentos.db
+agentos.db-shm
+agentos.db-wal
 *.db
-*.sqlite
-*.sqlite3
+
+# ChromaDB
 chroma_store/
 
 # Logs
 *.log
-logs/
 
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-.Python
 *.egg-info/
+.eggs/
 dist/
 build/
-.eggs/
 
-# Virtual environments
+# Environment
+.env
 .venv/
-venv/
-env/
 
-# IDEs
+# IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-.DS_Store
-
-# Sentence Transformers cache (downloaded models — large)
-.cache/

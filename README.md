@@ -129,7 +129,6 @@ Restart Claude Desktop. A 🔨 icon will appear confirming the connection.
 claude mcp add-json agentos '{
   "command": "agentos-server"
 }'
-```
 
 Verify with `/mcp` inside Claude Code.
 

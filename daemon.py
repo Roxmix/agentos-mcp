@@ -25,14 +25,21 @@ from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
 
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Resolve the project root: when running from source, use the source directory;
+# when installed via pip, database.py already computes the correct DB_PATH.
+# We just need to ensure the project root is on sys.path for imports.
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
 from config import settings
 from database import init_db, DB_PATH
 from events.store import init_event_store, purge_old_events
 from events.dispatcher import run_dispatch_loop
 from approval.executor import run as run_executor
-from daemon.jobs import (
+from daemon_pkg.jobs import (
     memory_decay_job,
     goal_monitor_job,
     reflection_analyzer_job,

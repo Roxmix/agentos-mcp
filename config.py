@@ -32,7 +32,8 @@ class Settings(BaseSettings):
     reflection_lookback_days: int = 7
     pattern_min_frequency: int = 3
 
-    # Logging
+    # Primary Agent
+    primary_agent_id: str = "owl-hermes"
     log_level: str = "INFO"
     log_file: str = "./agentos.log"
 

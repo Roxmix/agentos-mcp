@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+include .env.example
+recursive-include tools *.py
+recursive-include modules *.py
+recursive-include events *.py
+recursive-include graph *.py
+recursive-include approval *.py
+recursive-include daemon_pkg *.py
+recursive-include tests *.py
