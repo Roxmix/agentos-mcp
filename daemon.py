@@ -14,21 +14,19 @@ and autonomous tasks generated here.
 """
 
 import sys
+import os
 import signal
 import time
 import sqlite3
 import threading
 from datetime import datetime, timezone
+
 from loguru import logger
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
 
-import sys
-import os
-
 # Resolve the project root: when running from source, use the source directory;
 # when installed via pip, database.py already computes the correct DB_PATH.
-# We just need to ensure the project root is on sys.path for imports.
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
 if _PROJECT_ROOT not in sys.path:

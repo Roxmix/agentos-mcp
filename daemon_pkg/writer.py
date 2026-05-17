@@ -5,7 +5,14 @@ insights and autonomous tasks into the database.
 
 import uuid
 import sqlite3
+import sys
+import os
 from datetime import datetime, timezone
+
+# Pre-compute project root for imports
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
 
 def _now() -> str:
@@ -123,8 +130,6 @@ def update_heartbeat(db_path: str, agent_id: str, jobs_run: int):
 
 def get_all_agent_ids(db_path: str) -> list[str]:
     """Return all unique agent_ids found across all tables, plus the primary agent."""
-    import sys, os
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from config import settings
 
     conn = _get_conn(db_path)
@@ -165,7 +170,7 @@ def request_approval(
     Returns the queued item.
     """
     import sys, os
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.insert(0, _PROJECT_ROOT)
 
     from approval.queue import enqueue, calculate_risk
     from approval.webhook import notify
