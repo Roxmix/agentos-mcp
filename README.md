@@ -191,12 +191,15 @@ All settings are in `.env` (copy from `.env.example`):
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DATABASE_URL` | `sqlite:///./agentos.db` | SQLite database path |
+| `AGENTOS_DB_PATH` | `~/.agentos/agentos.db` | SQLite database path (set to use a custom location) |
 | `CHROMA_PERSIST_DIR` | `./chroma_store` | ChromaDB persistence directory |
 | `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Local sentence-transformers model |
 | `MEMORY_DECAY_RATE` | `0.01` | Daily decay rate for unaccessed memories |
 | `REFLECTION_LOOKBACK_DAYS` | `7` | Days analyzed in reflection jobs |
 | `PATTERN_MIN_FREQUENCY` | `3` | Minimum occurrences to flag as a pattern |
+| `LOG_LEVEL` | `INFO` | Logging level (DEBUG, INFO, WARNING, ERROR) |
+
+**Note:** The database is stored at `~/.agentos/agentos.db` by default. This ensures the MCP server and daemon share the same database whether installed via pip or run from source. Set `AGENTOS_DB_PATH` to use a custom location.
 
 ---
 
